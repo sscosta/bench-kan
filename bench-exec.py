@@ -21,7 +21,7 @@ from chebyshev_kan import ChebyshevKANMNIST, ChebyshevKAN
 from cauchy_kan import CauchyKANMNIST, CauchyKAN
 
 
-directory = "/home/froot/preprocessed_data/"
+directory = "preprocessed_data/"
 dataset_names = ["monks", "credit","kc2","aids","haramb","har"]
 label_columns = {"2024_02_21":"label","monks": "attr6", "kc2": "Class", "credit": "class", "iris": "species","mushroom":"class","mobile_price":"price_range", "MNIST":"label","aids":"target","haramb":"561","har":"Activity"}
 map_num_classes = {"2024_02_21": 2,"monks": 2, "kc2": 2, "credit": 2, "iris": 3,"mushroom":2,"mobile_price":4, "MNIST":10,"aids":2,"haramb":7, "har":7}
