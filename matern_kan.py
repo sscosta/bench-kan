@@ -106,14 +106,14 @@ class MaternKANLinear(torch.nn.Module):
         assert x.dim() == 2 and x.size(1) == self.in_features
         assert y.size() == (self.grid_size, self.in_features, self.out_features)
     
-        # Compute pairwise distances using Laplacian kernel
-        distances = torch.cdist(x, self.grid.T)  # (grid_size, grid_size)
-        weights = (-distances).relu()  # Laplacian kernel
+        #
+        distances = torch.cdist(x, self.grid.T)
+        weights = (-distances).relu()
     
-        A = weights  # (grid_size, grid_size)
-        B = y.permute(1, 2, 0).reshape(self.in_features * self.out_features, self.grid_size).T  # (grid_size, in_features * out_features)
-        solution = torch.linalg.lstsq(A, B).solution  # (grid_size, in_features * out_features)
-        result = solution.T.reshape(self.out_features, self.in_features, self.grid_size)  # (out_features, in_features, grid_size)
+        A = weights
+        B = y.permute(1, 2, 0).reshape(self.in_features * self.out_features, self.grid_size).T 
+        solution = torch.linalg.lstsq(A, B).solution
+        result = solution.T.reshape(self.out_features, self.in_features, self.grid_size)
     
         assert result.size() == (self.out_features, self.in_features, self.grid_size)
         return result.contiguous()
@@ -145,14 +145,13 @@ class MaternKANLinear(torch.nn.Module):
         assert x.dim() == 2 and x.size(1) == self.in_features
         batch = x.size(0)
 
-        splines = self.matern_kernel(x)  # (batch, in, coeff)
-        splines = splines.permute(1, 0, 2)  # (in, batch, coeff)
-        orig_coeff = self.scaled_spline_weight  # (out, in, coeff)
-        orig_coeff = orig_coeff.permute(1, 2, 0)  # (in, coeff, out)
-        unreduced_spline_output = torch.bmm(splines, orig_coeff)  # (in, batch, out)
-        unreduced_spline_output = unreduced_spline_output.permute(1, 0, 2)  # (batch, in, out)
+        splines = self.matern_kernel(x)
+        splines = splines.permute(1, 0, 2)
+        orig_coeff = self.scaled_spline_weight
+        orig_coeff = orig_coeff.permute(1, 2, 0)
+        unreduced_spline_output = torch.bmm(splines, orig_coeff)
+        unreduced_spline_output = unreduced_spline_output.permute(1, 0, 2)
 
-        # sort each channel individually to collect data distribution
         x_sorted = torch.sort(x, dim=0)[0]
         grid_adaptive = x_sorted[
             torch.linspace(0, batch - 1, self.grid_size, dtype=torch.int64, device=x.device)

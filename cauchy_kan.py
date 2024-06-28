@@ -58,7 +58,7 @@ class CauchyKANLinear(torch.nn.Module):
         Returns:
             torch.Tensor: Cauchy kernel tensor of shape (batch_size, in_features).
         """
-        gamma = 1.0  # You can adjust this parameter for the Cauchy kernel
+        gamma = 1.0  #adjustable
         return 1 / (1 + gamma * x.pow(2))
 
     @property
@@ -74,8 +74,8 @@ class CauchyKANLinear(torch.nn.Module):
 
         base_output = F.linear(self.base_activation(x), self.base_weight)
 
-        cauchy_kernel = self.cauchy_kernel(x)  # (batch_size, in_features)
-        scaled_weights = self.scaled_cauchy_weight  # (in_features, out_features)
+        cauchy_kernel = self.cauchy_kernel(x)
+        scaled_weights = self.scaled_cauchy_weight
 
         cauchy_output = torch.einsum('bi,ji->bj', cauchy_kernel, scaled_weights)
 
@@ -126,7 +126,7 @@ class CauchyKAN(nn.Module):
         self.layer3 = CauchyKANLinear(16, 10)
 
     def forward(self, x):
-        x = x.view(-1, self.n_features)  # Flatten the images
+        x = x.view(-1, self.n_features) 
         x = self.layer1(x)
         x = self.ln1(x)
         x = self.layer2(x)

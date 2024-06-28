@@ -90,7 +90,7 @@ class KANLinear(torch.nn.Module):
 
         grid: torch.Tensor = (
             self.grid
-        )  # (in_features, grid_size + 2 * spline_order + 1)
+        )
         x = x.unsqueeze(-1)
         bases = ((x >= grid[:, :-1]) & (x < grid[:, 1:])).to(x.dtype)
         for k in range(1, self.spline_order + 1):
@@ -127,14 +127,14 @@ class KANLinear(torch.nn.Module):
 
         A = self.b_splines(x).transpose(
             0, 1
-        )  # (in_features, batch_size, grid_size + spline_order)
-        B = y.transpose(0, 1)  # (in_features, batch_size, out_features)
+        )
+        B = y.transpose(0, 1)
         solution = torch.linalg.lstsq(
             A, B
-        ).solution  # (in_features, grid_size + spline_order, out_features)
+        ).solution
         result = solution.permute(
             2, 0, 1
-        )  # (out_features, in_features, grid_size + spline_order)
+        )
 
         assert result.size() == (
             self.out_features,
@@ -171,16 +171,14 @@ class KANLinear(torch.nn.Module):
         assert x.dim() == 2 and x.size(1) == self.in_features
         batch = x.size(0)
 
-        splines = self.b_splines(x)  # (batch, in, coeff)
-        splines = splines.permute(1, 0, 2)  # (in, batch, coeff)
-        orig_coeff = self.scaled_spline_weight  # (out, in, coeff)
-        orig_coeff = orig_coeff.permute(1, 2, 0)  # (in, coeff, out)
-        unreduced_spline_output = torch.bmm(splines, orig_coeff)  # (in, batch, out)
+        splines = self.b_splines(x)
+        splines = splines.permute(1, 0, 2)
+        orig_coeff = self.scaled_spline_weight
+        orig_coeff = orig_coeff.permute(1, 2, 0)
+        unreduced_spline_output = torch.bmm(splines, orig_coeff)
         unreduced_spline_output = unreduced_spline_output.permute(
             1, 0, 2
-        )  # (batch, in, out)
-
-        # sort each channel individually to collect data distribution
+        )
         x_sorted = torch.sort(x, dim=0)[0]
         grid_adaptive = x_sorted[
             torch.linspace(

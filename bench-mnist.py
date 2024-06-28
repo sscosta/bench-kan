@@ -45,8 +45,7 @@ dataset_name = "MNIST"
 learning_rate = 1e-3
 for kan_model in models:
     print(sum(p.numel() for p in kan_model.parameters()))
-    # Define model
-    device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
     kan_model.to(device)
 
     # Set up the optimizer and loss function
@@ -111,5 +110,4 @@ for kan_model in models:
 
             print(f"Epoch {epoch + 1}, Val Loss: {val_loss}, Val Accuracy: {val_accuracy}, Precision: {precision}, Recall: {recall}, F1-score: {f1}")
 
-            # Update learning rate
             scheduler.step()

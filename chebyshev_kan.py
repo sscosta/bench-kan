@@ -66,7 +66,7 @@ class ChebyshevKANLinearMNIST(torch.nn.Module):
         """
         assert x.dim() == 2 and x.size(1) == self.in_features
 
-        x = torch.tanh(x)  # Normalizing the input tensor
+        x = torch.tanh(x)
         T = [torch.ones_like(x), x]
         for k in range(2, self.chebyshev_degree + 1):
             T_k = 2 * x * T[-1] - T[-2]
@@ -90,8 +90,8 @@ class ChebyshevKANLinearMNIST(torch.nn.Module):
 
         base_output = F.linear(self.base_activation(x), self.base_weight)
 
-        chebyshev_polynomials = self.chebyshev_polynomials(x)  # (batch_size, in_features, chebyshev_degree + 1)
-        scaled_weights = self.scaled_chebyshev_weight  # (in_features, out_features, chebyshev_degree + 1)
+        chebyshev_polynomials = self.chebyshev_polynomials(x)
+        scaled_weights = self.scaled_chebyshev_weight
 
         chebyshev_output = torch.einsum('bik,jik->bj', chebyshev_polynomials, scaled_weights)
 
@@ -225,7 +225,7 @@ class ChebyshevKANLinear(torch.nn.Module):
         """
         assert x.dim() == 2 and x.size(1) == self.in_features
 
-        x = torch.tanh(x)  # Normalizing the input tensor
+        x = torch.tanh(x)
         T = [torch.ones_like(x), x]
         for k in range(2, self.chebyshev_degree + 1):
             T_k = 2 * x * T[-1] - T[-2]
@@ -249,8 +249,8 @@ class ChebyshevKANLinear(torch.nn.Module):
 
         base_output = F.linear(self.base_activation(x), self.base_weight)
 
-        chebyshev_polynomials = self.chebyshev_polynomials(x)  # (batch_size, in_features, chebyshev_degree + 1)
-        scaled_weights = self.scaled_chebyshev_weight  # (in_features, out_features, chebyshev_degree + 1)
+        chebyshev_polynomials = self.chebyshev_polynomials(x
+        scaled_weights = self.scaled_chebyshev_weight
 
         chebyshev_output = torch.einsum('bik,jik->bj', chebyshev_polynomials, scaled_weights)
 

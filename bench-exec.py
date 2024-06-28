@@ -23,7 +23,6 @@ from cauchy_kan import CauchyKANMNIST, CauchyKAN
 
 directory = "/home/froot/preprocessed_data/"
 dataset_names = ["monks", "credit","kc2","aids","haramb","har"]
-#dataset_names = ["har"]
 label_columns = {"2024_02_21":"label","monks": "attr6", "kc2": "Class", "credit": "class", "iris": "species","mushroom":"class","mobile_price":"price_range", "MNIST":"label","aids":"target","haramb":"561","har":"Activity"}
 map_num_classes = {"2024_02_21": 2,"monks": 2, "kc2": 2, "credit": 2, "iris": 3,"mushroom":2,"mobile_price":4, "MNIST":10,"aids":2,"haramb":7, "har":7}
 
@@ -80,9 +79,7 @@ for dataset_name in dataset_names:
       MaternKAN([n_features, batch_size, num_classes])
     ]
     for kan_model in kan_models:
-        # Initialize the KAN model
-        
-        device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = "cpu"
         kan_model.to(device)
         
         # Set up the optimizer and loss function
@@ -91,9 +88,7 @@ for dataset_name in dataset_names:
         else:
             optimizer = torch.optim.Adam(kan_model.parameters(), lr=learning_rate)
         criterion = nn.CrossEntropyLoss()
-        #optimizer = torch.optim.Adam(kan_model.parameters(), lr=learning_rate)
-        #criterion = nn.CrossEntropyLoss()
-        
+     
         save_dir = f"/home/froot/kan_results/{dataset_name}/"
         os.makedirs(save_dir, exist_ok=True)
         save_file = f"{save_dir}{kan_model.__class__.__name__}_results.csv"

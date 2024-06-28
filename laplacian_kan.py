@@ -17,7 +17,7 @@ class LaplacianKANLinear(torch.nn.Module):
         base_activation=torch.nn.SiLU,
         grid_eps=0.02,
         grid_range=[-1, 1],
-        sigma=1.0,  # Parameter for the Laplacian kernel
+        sigma=1.0,
     ):
         super(LaplacianKANLinear, self).__init__()
         self.in_features = in_features
@@ -82,11 +82,11 @@ class LaplacianKANLinear(torch.nn.Module):
         """
         assert x.dim() == 2 and x.size(1) == self.in_features
 
-        grid = self.grid.unsqueeze(0)  # (1, in_features, grid_size)
-        x = x.unsqueeze(-1)  # (batch_size, in_features, 1)
-        dists = torch.abs(x - grid) / self.sigma  # (batch_size, in_features, grid_size)
-        kernel = torch.exp(-dists)  # (batch_size, in_features, grid_size)
-        
+        grid = self.grid.unsqueeze(0)
+        x = x.unsqueeze(-1)
+        dists = torch.abs(x - grid) / self.sigma
+        kernel = torch.exp(-dists) 
+
         assert kernel.size() == (x.size(0), self.in_features, self.grid_size)
         return kernel.contiguous()
 
@@ -118,14 +118,14 @@ class LaplacianKANLinear(torch.nn.Module):
         assert x.dim() == 2 and x.size(1) == self.in_features
         batch = x.size(0)
 
-        kernels = self.laplacian_kernel(x)  # (batch, in, grid_size)
-        kernels = kernels.permute(1, 0, 2)  # (in, batch, grid_size)
-        orig_coeff = self.scaled_spline_weight  # (out, in, grid_size)
-        orig_coeff = orig_coeff.permute(1, 2, 0)  # (in, grid_size, out)
-        unreduced_spline_output = torch.bmm(kernels, orig_coeff)  # (in, batch, out)
+        kernels = self.laplacian_kernel(x)
+        kernels = kernels.permute(1, 0, 2)
+        orig_coeff = self.scaled_spline_weight
+        orig_coeff = orig_coeff.permute(1, 2, 0)
+        unreduced_spline_output = torch.bmm(kernels, orig_coeff)
         unreduced_spline_output = unreduced_spline_output.permute(
             1, 0, 2
-        )  # (batch, in, out)
+        )
 
         x_sorted = torch.sort(x, dim=0)[0]
         grid_adaptive = x_sorted[
@@ -147,7 +147,7 @@ class LaplacianKANLinear(torch.nn.Module):
         grid = self.grid_eps * grid_uniform + (1 - self.grid_eps) * grid_adaptive
 
         self.grid.copy_(grid.T)
-        self.spline_weight.data.copy_(self.spline_weight.data)  # Keep the spline weights unchanged
+        self.spline_weight.data.copy_(self.spline_weight.data)
 
     def regularization_loss(self, regularize_activation=1.0, regularize_entropy=1.0):
         l1_fake = self.spline_weight.abs().mean(-1)
