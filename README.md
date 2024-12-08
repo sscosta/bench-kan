@@ -23,10 +23,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/sscosta/bench-kan">
+  <!--<a href="https://github.com/sscosta/bench-kan">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-
+-->
   <h3 align="center">Bench-KAN</h3>
 
   <p align="center">
@@ -79,8 +79,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+<!--
 <img src="images/screenshot.png" alt="Logo">
-
+-->
 Bench-KAN is a repository for validation of Kolmogorov-Arnold Networks (KANs) for real-world applications, as well as for the usage of KANs for real-time Human Activity Recognition (HAR). KANs are based on the generalization of the Kolmogorov-Arnold Representation Theorem (KAT) for networks of arbitrary depth and width. KAT states that any continuouos multivariate function may be composed by the sum of univariate continuous functions.
 KANs were validated across mathematical and physics domains but no broad study on their usage for real-world problems had been done. The present project performs a study on open datasets with a focus on improving the performance of Human Activity Recognition Systems.
 
