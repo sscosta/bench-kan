@@ -53,9 +53,8 @@
         <li><a href="#locally">Locally</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li>
-      <a href="#test-specific-language-tsl">Test Specific Language, TSL</a>
+      <a href="#testing-with-own-dataset">Testing with own dataset</a>
       <ul>
         <li>
           <a href="#basic-structure">Basic Structure</a>
@@ -133,41 +132,34 @@ After having installed all the required software:
     cd bench-kan
     pip install -r requirements.txt
     ```
-3. Run the benchmark script<br/>
+3. Run the benchmark script that trains and tests KANs on all datasets<br/>
    ```sh
    python bench-exec.py
    ```
-4. Install NPM packages<br/>
-   Open a command line in the folder _RAPITest\RAPITest\ClientApp_ and run the command
-   ```sh
-   npm install
-   ```
-5. Configure the solution<br/>
-  Make sure the solution is set to _run multiple projects_, _start_ RAPITest, RunTestsWorkerService and SetupTestsWorkerService and _none_ for ModelsLibrary
-6. Create Database Tables<br/>
-   Open the _package manager console_ (tools -> nuget manager -> package manager console)<br/>
-   Make sure the default project is RAPITest<br/>
-   Run the command:
-   ```sh
-   EntityFrameWorkCore\Update-Database -Context ApplicationDbContext
-   ```
-7. Run and enjoy!
+4. Collect the tensorflow lite model for the dataset har mobile<br/>
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+5. Connect an Android device into the computer.
+   Plug an Android device into the computer and copy the tensorflow lite model to the external storage. Create a folder named SensorData and copy the tensorflow lite model to the folder.
 
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Demonstration on youtube coming soon. 
+6. Open the HARDetector project on Android Studio<br/>
+  Compile the project. Install the resulting application in the plugged Android device.
+  
+7. Place the Android Device on the waist and enjoy!
+    The app correcly identify which activity you're performing<br/>
+    The system is prepared to identify the following activities:
+    * LAYING
+    * SITTING
+    * STANDING
+    * WALKING
+    * WALKING UPSTAIRS
+    * WALKING DOWNSTAIRS
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
 <!-- ROADMAP -->
-## Test Specific Language, _TSL_
+## Testing with own dataset
 
 <p>
 As mentioned in the introduction, this app takes advantage of <i>TSL</i> files. 

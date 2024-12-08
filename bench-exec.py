@@ -155,7 +155,7 @@ for dataset_name in dataset_names:
         traced_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_traced_model.pt"
         traced_model.save(traced_model_save_path)
         print(f"Model saved as TorchScript at {traced_model_save_path}")
-        
+
         optimized_model = optimize_for_mobile(traced_model)
         optimized_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_optimized_traced_model.pt"
         optimized_model.save(optimized_model_save_path)
