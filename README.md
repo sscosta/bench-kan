@@ -35,7 +35,6 @@
 </div>
 
 
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -49,30 +48,31 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#docker">Docker</a></li>
         <li><a href="#locally">Locally</a></li>
+        <ul>
+          <li><a href="#prerequisites">Prerequisites</a></li>
+          <li><a href="#installation">Installation</a></li>
+        </ul>
+        <li><a href="#run-the-benchmark-and-do-real-time-har">Run the Benchmark and Do Real-time HAR</a></li>
       </ul>
     </li>
     <li>
-      <a href="#testing-with-own-dataset">Testing with own dataset</a>
+      <a href="#testing-with-own-dataset">Testing with Own Dataset</a>
       <ul>
-        <li>
-          <a href="#basic-structure">Basic Structure</a>
-          <ul>
-            <li><a href="#workflow">Workflow</a></li>
-            <li><a href="#stress-test">Stress Test</a></li>
-            <li><a href="#test">Test</a></li>
-            <li><a href="#dictionary-file">Dictionary File</a></li>
-            <li><a href="#verifications">Verifications</a></li>
-            <li><a href="#retain">Retain</a></li>
-          </ul>
-        </li>
+        <li><a href="#collecting-data-with-activity-protocol">Collecting Data with Activity Protocol</a></li>
+        <li><a href="#collect-data-for-an-isolated-activity">Collect Data for an Isolated Activity</a></li>
+        <li><a href="#produce-a-train-and-test-dataset">Produce a Train and Test Dataset</a></li>
+        <li><a href="#train-the-model-with-your-dataset">Train the Model with Your Dataset</a></li>
+        <li><a href="#assessing-the-performance-of-the-models">Assessing the Performance of the Models</a></li>
+        <li><a href="#load-the-trained-model-in-the-device">Load the Trained Model in the Device</a></li>
+        <li><a href="#validation">Validation</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#contact-and-acknowledgements">Contact and Acknowledgements</a></li>
   </ol>
 </details>
+
 
 
 
@@ -85,6 +85,8 @@ Bench-KAN is a repository for validation of Kolmogorov-Arnold Networks (KANs) fo
 KANs were validated across mathematical and physics domains but no broad study on their usage for real-world problems had been done. The present project performs a study on open datasets with a focus on improving the performance of Human Activity Recognition Systems.
 
 The repository is composed of code to test KANs with open datasets and of two android applications, one for data collection (CollectData) and another for real-time human activity recognition (HARDetector).
+
+The real-time component can be used with a dataset comprised of 6 subjects. It can also be used with your own dataset.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -132,19 +134,20 @@ After having installed all the required software:
     cd bench-kan
     pip install -r requirements.txt
     ```
-3. Run the benchmark script that trains and tests KANs on all datasets<br/>
+#### Run the benchmark and do real-time HAR
+1. Run the benchmark script that trains and tests KANs on all datasets<br/>
    ```sh
    python bench-exec.py
    ```
-4. Collect the tensorflow lite model for the dataset har mobile<br/>
+2. Collect the tensorflow lite model for the dataset har mobile<br/>
 
-5. Connect an Android device into the computer.
+3. Connect an Android device into the computer.
    Plug an Android device into the computer and copy the tensorflow lite model to the external storage. Create a folder named SensorData and copy the tensorflow lite model to the folder.
 
-6. Open the HARDetector project on Android Studio<br/>
+4. Open the HARDetector project on Android Studio<br/>
   Compile the project. Install the resulting application in the plugged Android device.
   
-7. Place the Android Device on the waist and enjoy!
+5. Place the Android Device on the waist and enjoy!
     The app correcly identify which activity you're performing<br/>
     The system is prepared to identify the following activities:
     * LAYING
@@ -162,236 +165,64 @@ After having installed all the required software:
 ## Testing with own dataset
 
 <p>
-As mentioned in the introduction, this app takes advantage of <i>TSL</i> files. 
+
+Apart from using the har_mobile dataset, you can build your own dataset, train a model with it and test the system.
 </p>
 
-<p>These are <i>YAML</i> files with the purpose of defining specific tests based on HTTP requests in order to specify tests that couldn't reliably be made automaticly with just the API's specification.</p> 
 
-The app supports the creation of these files trough a simple UI, however not every functionality is supported trough this UI, leaving some functionalities to only a manual creation. 
+<p>
 
-### Basic Structure 
+To build your own dataset, open the CollectData project on Android Studio and compile the project. Install it in an Android phone and start the application. You can either collect data by performing an activity protocol or collect data for an isolated activity.
+</p>
 
-You can write _TSL_ files in _YAML_. A sample _TSL_ definition written in _YAML_ looks like:
+### Collecting data with Activity protocol 
+
+Enter the Subject Name and press Start Activity Protocol.
+
+The system will instruct you to perform a protocol of 6 activities, each during 30 seconds with 5 secondsinterval between them.
+
+You will start by lay down, then sit, stand, walk, walk upstairs and downstairs.
+
+The application will collect data with 50Hz sampling frequency and annotate it with the subject name.
+
+
+### Collect data for an isolated activity
+
+If you don't want to perform the activity protocol and just want to collect data for one of the activities, select the activity from the activity drop down menu, and press Start <Activity>. When you're ready to stop collecting data, press Stop <Activity>.
+
+
+### Produce a train and test dataset
+
+The datasets for each subject will be stored in the external storage of the device, namely in the SensorData folder. The files will be marked with the subject name and a timestamp.
+
+Collect those files and combine them in a file called final_combined_output.csv.
+
+Run the preprocess script and perform a train/test split of the dataset:
 ```sh
-  - WorkflowID: crud_pet
-
-    Stress:
-      Count: 40
-      Threads: 5
-      Delay: 0
-
-    Tests:
-
-    - TestID: createPet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet"
-      Method: Post
-      Headers:
-        - Content-Type:application/json
-        - Accept:application/json
-      Body: "$ref/dictionary/petExample"
-      Retain:
-        - petId#$.id
-      Verifications:
-        - Code: 200
-          Schema: "$ref/definitions/Pet"
-
-    - TestID: readPet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Method: Get
-      Headers:
-        - Accept:application/xml
-      Verifications:
-        - Code: 200
-          Schema: "$ref/definitions/Pet"
-          Custom: ["CustomVerification.dll"]
-
-    - TestID: updatePet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Query:
-        - name=doggie
-        - status=sold
-      Method: Post
-      Headers:
-        - Accept:application/xml
-      Verifications:
-        - Code: 200
-          Schema: "$ref/dictionary/petSchemaXml"
-
-    - TestID: deletePet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Method: Delete
-      Headers:
-        - Accept:application/json
-      Verifications:
-        - Code: 200     
-```
-#### Workflow
-
-Every _TSL_ file must include atleast one workflow 
-```sh
-  - WorkflowID: crud_pet
-```
-The workflow needs an ID, which must be unique across all workflows. <br/>
-One workflow must be comprised of one or more tests and optionally one stress test. All the tests inside the workflow are guaranteed to be executed sequentially which is usefull for situations where the output of one test influences the input of the other.
-
-#### Stress Test
-
-Optionally, one workflow can have one stress test 
-```sh
-  Stress:
-      Count: 40
-      Threads: 5
-      Delay: 0
-```
-The stress test has 3 fields, Count, Threads and Delay.<br/>
-* Count defines the number of times the complete workflow will be executed
-* Threads defines the number of threads by which _Count_ will be divided (Count: 10 and Threads: 2 means each thread will execute the workflow 5 times)
-* Delay defines the delay in milliseconds between every full execution, which can be usefull to prevent errors of too many executions 
-
-#### Test
-
-You can define one or more tests within each workflow
-```sh
-  Tests:
-
-    - TestID: createPet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet"
-      Method: Post
-      Headers:
-        - Content-Type:application/json
-        - Accept:application/json
-      Body: "$ref/dictionary/petExample"
-      Retain:
-        - petId#$.id
-      Verifications:
-        - Code: 200
-          Schema: "$ref/definitions/Pet"
-
-    - TestID: readPet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Method: Get
-      Headers:
-        - Accept:application/xml
-      Verifications:
-        - Code: 200
-          Contains: id
-          Count: doggie#1
-          Schema: "$ref/definitions/Pet"
-          Match: /Pet/name#doggie
-          Custom: ["CustomVerification.dll"]
-
-    - TestID: updatePet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Query:
-        - name=doggie
-        - status=sold
-      Method: Post
-      Headers:
-        - Accept:application/xml
-      Verifications:
-        - Code: 200
-          Schema: "$ref/dictionary/petSchemaXml"
-
-    - TestID: deletePet
-      Server: "https://petstore3.swagger.io/api/v3"
-      Path: "/pet/{petId}"
-      Method: Delete
-      Headers:
-        - Accept:application/json
-      Verifications:
-        - Code: 200     
+python preprocess.py
+python train_test_split.py
 ```
 
-The test is identified with its id, which MUST be unique across all tests of every workflow
+### Train the model with your dataset
+
+Place the resulting files (har_mobile_train.csv and har_mobile_test.csv) in the folder preprocessed_data.
+Run the training script:
 ```sh
-   - TestID: createPet
+python bench-exec.py
 ```
+From the kan_results folder, select the kan model you want to load in the Android device (there will be 7, one for each of the kernels). Those files end with the suffix _lite.pt.
 
-It is then followed by 3 mandatory fields for a successful HTTP request, the server, the path and the method
-```sh
-    Server: "https://petstore3.swagger.io/api/v3"
-    Path: "/pet"
-    Method: Post
-```
-(Currently the only supported methods are Get, Post, Put and Delete)
+### Assessing the performance of the models
 
-You can also define headers following a key/value structure
-```sh
-  Headers:
-    - Content-Type:application/json
-    - Accept:application/json
-```
+You can use the script generate_plot.py to plot the results of each individual kernel for your dataset. You can also lookup accuracy, precision, recall and f1-score for each of the training epochs to see if and how the model converged.
 
-Which is similar for Query string parameters
-```sh
-  Query:
-    - name=doggie
-    - status=sold
-```
+### Load the trained model in the device
 
-The body data can be defined directly on the _TSL_ file, however they can sometimes be extremely large which would hurt the clarity and readability of the file. You can however create an auxiliary text file (dictionary file) which contains the actual body and a unique identifier within the dictionary, leaving only the reference to said identifier on the _TSL_ file
-```sh
-  Body: "$ref/dictionary/petExample"
-```
+Copy the trained model to the SensorData folder of the device and rename it KAN.pt.
 
-#### Dictionary File
+### Validation
 
-The dictionary file is a text file containing all the body data and schemas in order to improve clarity on the actual _TSL_ file
-```sh
-  dictionaryID:petExample
-  {
-    "id": 10,
-    "name": "doggie",
-    "status": "available"
-  }
-
-```
-Every entry on the file requires the dictionaryID which must be unique across all entries, followed by the actual data, followed by an empty line to separate them
-
-#### Verifications
-
-Each test can have multiple verifications, only the Code verification is mandatory
-```sh
-  Verifications:
-    - Code: 200
-      Contains: id
-      Count: doggie#1
-      Schema: "$ref/definitions/Pet"
-      Match: /Pet/name#doggie
-      Custom: ["CustomVerification.dll"]
-```
-Currently 6 different verifications are supported:
-
-| Requirement 	| Name     	| Input Type        	| Description                                                     	|
-|-------------	|----------	|-------------------	|-----------------------------------------------------------------	|
-| Mandatory   	| Code     	| Integer           	| Response code matches the given code                            	|
-| Optional    	| Contains 	| String            	| Response body contains the given string                         	|
-| Optional    	| Count    	| String#Integer    	| Response body contains given string # times                     	|
-| Optional    	| Schema   	| String            	| Response body matches the given schema*                          	|
-| Optional    	| Match    	| StringPath#String 	| Response body matches the given value present in the StringPath 	|
-| Optional    	| Custom   	| [String]          	| Runs Custom verifications given by the user                     	|
-
-\*The schema verification can be supplied directly, or through reference to the dictionary file or to any schema present in the supplied OAS  
-
-#### Retain
-
-In some requests, the input is based on the output of a previous request, usually in simple workflows, like create read<br/>
-```sh
-    Retain:
-      - petId#$.id
-```
-The keyword Retain allows the user to retain some information from the response body of the request to then be used in other tests of the same workflow.<br/>
-For instance the value present at the json path _$.id_ will be retained with the identifier _petId_ which can then be used in following tests
-```sh
-    Path: "/pet/{petId}"
-```
+After you load the trained model in the device, place it in the waist and see it perform real-time human activity recognition.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
