@@ -112,15 +112,12 @@ The android applications CollectData and HARDetector run with built-in Android a
 
 ### Locally
 
-If you want to run it directly without the use of docker here are the steps you need to make
+Here are the steps to run the scripts and app.
 
 #### Prerequisites
 
-* Install Visual Studio 2019 (Compatibility with other versions is not guaranteed)
-* Install Sql Server 2019 (Compatibility with other versions is not guaranteed)
-* (Optional) Install Sql Server Management Studio 
-* Install RabbitMQ (Default Installation)
-* Install Node.js and NPM
+* Install Android Studio
+* Install Python (The current scripts were tested with Python 3.10 for pytorch compatibility)
 
 #### Installation
 
@@ -130,15 +127,15 @@ After having installed all the required software:
    ```sh
    git clone https://github.com/sscosta/bench-kan
    ```
-2. Create a Database
-    ```sh
-    Example name: RapiTestDB
+2. Install python dependencies
+
+    ``` sh
+    cd bench-kan
+    pip install -r requirements.txt
     ```
-3. Change Connection String Values<br/>
-   Open the solution with Visual Studio and go to the _appsettings.json_ file of RAPITest, RunTestsWorkerService and SetupTestsWorkerService projects and change the line:
+3. Run the benchmark script<br/>
    ```sh
-   //local
-   "DefaultConnection": type your connection string here
+   python bench-exec.py
    ```
 4. Install NPM packages<br/>
    Open a command line in the folder _RAPITest\RAPITest\ClientApp_ and run the command

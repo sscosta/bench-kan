@@ -22,9 +22,9 @@ from cauchy_kan import CauchyKANMNIST, CauchyKAN
 
 
 directory = "preprocessed_data/"
-dataset_names = ["monks", "credit","kc2","aids","haramb","har"]
-label_columns = {"2024_02_21":"label","monks": "attr6", "kc2": "Class", "credit": "class", "iris": "species","mushroom":"class","mobile_price":"price_range", "MNIST":"label","aids":"target","haramb":"561","har":"Activity"}
-map_num_classes = {"2024_02_21": 2,"monks": 2, "kc2": 2, "credit": 2, "iris": 3,"mushroom":2,"mobile_price":4, "MNIST":10,"aids":2,"haramb":7, "har":7}
+dataset_names = ["monks", "credit","kc2","aids","haramb","har","har_mobile"]
+label_columns = {"2024_02_21":"label","monks": "attr6", "kc2": "Class", "credit": "class", "iris": "species","mushroom":"class","mobile_price":"price_range", "MNIST":"label","aids":"target","haramb":"561","har":"Activity","har_mobile":"label"}
+map_num_classes = {"2024_02_21": 2,"monks": 2, "kc2": 2, "credit": 2, "iris": 3,"mushroom":2,"mobile_price":4, "MNIST":10,"aids":2,"haramb":7, "har":7,"har_mobile":6}
 
 num_epochs = 50
 batch_size = 64
@@ -148,12 +148,16 @@ for dataset_name in dataset_names:
             # Save the model after each epoch
             torch.save(kan_model.state_dict(), model_save_path)
         
+        kan_model.eval()
         example_input = torch.randn(batch_size, n_features)
         traced_model = torch.jit.trace(kan_model, example_input)
         #traced_model = torch.jit.script(kan_model)
         traced_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_traced_model.pt"
         traced_model.save(traced_model_save_path)
         print(f"Model saved as TorchScript at {traced_model_save_path}")
+        
         optimized_model = optimize_for_mobile(traced_model)
         optimized_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_optimized_traced_model.pt"
         optimized_model.save(optimized_model_save_path)
+        
+        traced_model._save_for_lite_interpreter(f"{save_dir}{kan_model.__class__.__name__}_lite.pt")
