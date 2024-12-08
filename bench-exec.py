@@ -11,7 +11,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, confusion_m
 from sklearn.preprocessing import LabelEncoder
 from torchvision import transforms
 import torchvision
-
+from torch.utils.mobile_optimizer import optimize_for_mobile
 from spline_kan import KAN
 from rbf_kan import RBFKAN
 from rational_quadratic_kan import RationalQuadraticKAN
@@ -145,3 +145,15 @@ for dataset_name in dataset_names:
               f.write(f"{kan_model.__class__.__name__},{epoch+1},{train_loss},{val_loss},{val_accuracy},{precision},{recall},{f1}\n")
             
             print(f"Epoch {epoch + 1}, Val Loss: {val_loss}, Val Accuracy: {val_accuracy}, Precision: {precision}, Recall: {recall}, F1-score: {f1}")
+            # Save the model after each epoch
+            torch.save(kan_model.state_dict(), model_save_path)
+        
+        example_input = torch.randn(batch_size, n_features)
+        traced_model = torch.jit.trace(kan_model, example_input)
+        #traced_model = torch.jit.script(kan_model)
+        traced_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_traced_model.pt"
+        traced_model.save(traced_model_save_path)
+        print(f"Model saved as TorchScript at {traced_model_save_path}")
+        optimized_model = optimize_for_mobile(traced_model)
+        optimized_model_save_path = f"{save_dir}{kan_model.__class__.__name__}_optimized_traced_model.pt"
+        optimized_model.save(optimized_model_save_path)

@@ -249,7 +249,7 @@ class ChebyshevKANLinear(torch.nn.Module):
 
         base_output = F.linear(self.base_activation(x), self.base_weight)
 
-        chebyshev_polynomials = self.chebyshev_polynomials(x
+        chebyshev_polynomials = self.chebyshev_polynomials(x)
         scaled_weights = self.scaled_chebyshev_weight
 
         chebyshev_output = torch.einsum('bik,jik->bj', chebyshev_polynomials, scaled_weights)
